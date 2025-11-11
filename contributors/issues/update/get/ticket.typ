@@ -13,7 +13,7 @@
   columns: (1fr),
   align(center)[
     YóUnǎi \u{22B7} ames0k0 \
-    EMail#super[#link("mailto:uuid.ames0k0@gmail.com")[\u{2197}]]
+    E-Mail#super[#link("mailto:uuid.ames0k0@gmail.com")[\u{2197}]]
     LinkedIn#super[#link("https://www.linkedin.com/in/ames0k0/")[\u{2197}]]
     Github#super[#link("https://github.com/ames0k0/")[\u{2197}]]
   ]
@@ -30,35 +30,26 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 = Ticket
 #align(center, image("./Diagram-Update-GET.drawio.svg"))
 
-1. `Request`
-2. Params Validation
-3. Data Validation
-4. `Response`
-
-= 1. Request
+= Request
 ```
-+! CurrentUser
-|> cookies[AccessToken]
-```
-
-= 2. Params Validation
-```
-+? P.issue_id
++! P.issue_id
 |> int.GreatherThan(0)
-|> orelse raise
+|> orelse raise ValidationError
 ```
 
-= 3. Data Validation
+= Controller
 ```
-+? P.issue_id
-|> db.find_one(issues.id && issues.created_by)
-|> orelse redirect
-```
++! C.access_token
+|> orelse raise InvalidTokenError
 
-= 4. Response
-```
-+? Error                  +? Success
-|> entryPoint(/issues/)   |> renderTemplate
-|> error_message          |  > ctx={issue, CurrentUser}
-                          |  > renderForm(issue)
++! D.current_user
+|> orelse raise InvalidTokenError
+
++! P.issue_id
+|> db.FindOne(issues.id)
+|> orelse redirect RedirectResponse(NotFoundErrMsg)
+|> permissions.IsOwner(current_user.id, issues.created_by)
+|> orelse redirect RedirectResponse(PermissionsErrMsg)
+
+return TemplateResponse(current_user, issue).RenderForm()
 ```
