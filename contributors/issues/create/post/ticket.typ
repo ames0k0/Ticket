@@ -13,7 +13,7 @@
   columns: (1fr),
   align(center)[
     YóUnǎi \u{22B7} ames0k0 \
-    EMail#super[#link("mailto:uuid.ames0k0@gmail.com")[\u{2197}]]
+    E-Mail#super[#link("mailto:uuid.ames0k0@gmail.com")[\u{2197}]]
     LinkedIn#super[#link("https://www.linkedin.com/in/ames0k0/")[\u{2197}]]
     Github#super[#link("https://github.com/ames0k0/")[\u{2197}]]
   ]
@@ -30,52 +30,52 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 = Ticket
 #align(center, image("./Diagram-Create.drawio.svg"))
 
-1. `Request`
-2. Form Validation
-3. Data Validation
-4. Data Insertion
-5. `Response`
-
-= 1. Request
-```
-+! CurrentUser
-|> cookies[AccessToken]
-```
-
-= 2. Form Validation
-```
-+? F.url        +! F.title        +? F.description  +! F.tags         +? F.labels
-|> str.Strip    |> str.Strip      |> str.Strip      |> str.Strip      |> str.Strip
-|> SupportedURL |> orelse raise                     |> str.Split[,]   |> str.Split[,]
-|> orelse raise                                     |> orelse raise
-```
-
-= 3. Data Validation
+= Request
 ```
 +? F.url
-|> db.exists(issues.url)
-|> raise
-```
+|> str.Strip
+|> SupportedURLEnum
+|> orelse raise ValidationError
 
-= 4. Data Insertion
-```
-+! F.@ + CurrentUser
-|> db.insert(issues)
++! F.title
+|> str.Strip
+|> orelse raise ValidationError
+
++? F.description
+|> str.Strip
 
 +! F.tags
-|> db.exists(categories.identifier && categories.name)
-|> db.update(categories.issues_ids)
-|> orelse db.insert(categories)
+|> str.Strip
+|> str.Split[,]
+|> orelse raise ValidationError
 
 +? F.labels
-|> db.exists(categories.identifier && categories.name)
-|> db.update(categories.issues_ids)
-|> orelse db.insert(categories)
+|> str.Strip
+|> str.Split[,]
 ```
 
-= 5. Response
+= Controller
 ```
-+? Error                          +? Success
-|> entryPoint(/issues/create/)    |> entryPoint(/issues/)
-|> error_message                  |> error_message
++! C.access_token
+|> orelse raise InvalidTokenError
+
++! D.current_user
+|> orelse raise InvalidTokenError
+
++? F.url
+|> db.FindOne(issues.url)
+|> redirect RedirectResponseError(issue.id)
+|> orelse db.InsertOne(F.@ + D.current_user)
+
++! F.tags
+|> db.FindOne(categories.identifier="tags" && categories.name=F.tags[@])
+|> db.UpdateOne(categories.issues_ids)
+|> orelse db.InsertOne(categories)
+
++? F.labels
+|> db.FindOne(categories.identifier="labels" && categories.name=F.labels[@])
+|> db.UpdateOne(categories.issues_ids)
+|> orelse db.InsertOne(categories)
+
+return redirect RedirectResponseSuccess(issue.id)
 ```
