@@ -33,7 +33,7 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 = Request
 ```
 +! P.issue_id
-|> int.GreatherThan(0)
+|> str.Strip
 |> orelse raise ValidationError
 ```
 
