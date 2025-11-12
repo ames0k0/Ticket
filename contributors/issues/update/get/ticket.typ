@@ -51,5 +51,5 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 |> permissions.IsOwner(current_user.id, issues.created_by)
 |> orelse redirect RedirectResponse(PermissionsErrMsg)
 
-return TemplateResponse(current_user, issue).RenderForm()
++! return TemplateResponse(current_user, issue).RenderForm()
 ```
