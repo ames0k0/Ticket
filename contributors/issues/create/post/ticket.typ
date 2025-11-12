@@ -77,5 +77,5 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 |> db.UpdateOne(categories.issues_ids)
 |> orelse db.InsertOne(categories)
 
-return redirect RedirectResponseSuccess(issue.id)
++! redirect RedirectResponseSuccess(issue.id)
 ```
