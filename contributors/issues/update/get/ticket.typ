@@ -45,6 +45,8 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 +! D.current_user
 |> orelse raise InvalidTokenError
 
++! D.c_issues
+
 +! P.issue_id
 |> db.FindOne(issues.id)
 |> orelse redirect RedirectResponse(NotFoundErrMsg)
