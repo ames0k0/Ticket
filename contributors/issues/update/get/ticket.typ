@@ -29,29 +29,6 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 
 = Ticket
 #align(center, image("./Diagram-Update-GET.drawio.svg"))
-
-= Request
-```
-+! P.issue_id
-|> str.Strip
-|> orelse raise ValidationError
-```
-
-= Controller
-```
-+! C.access_token
-|> orelse raise InvalidTokenError
-
-+! D.current_user
-|> orelse raise InvalidTokenError
-
-+! D.c_issues
-
-+! P.issue_id
-|> db.FindOne(issues.id)
-|> orelse redirect RedirectResponse(NotFoundErrMsg)
-|> permissions.IsOwner(current_user.id, issues.created_by)
-|> orelse redirect RedirectResponse(PermissionsErrMsg)
-
-+! return TemplateResponse(current_user, issue).RenderForm()
-```
+#align(center, image("./Diagram-Request.drawio.svg"))
+#v(5em)
+#align(center, image("./Diagram-Controller.drawio.svg"))
