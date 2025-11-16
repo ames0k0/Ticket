@@ -29,57 +29,5 @@ Tech Stack: _Python_, _FastAPI_, _MongoDB_
 
 = Ticket
 #align(center, image("./Diagram-Create.drawio.svg"))
-
-= Request
-```
-+? F.url
-|> str.Strip
-|> SupportedURLEnum
-|> orelse raise ValidationError
-
-+! F.title
-|> str.Strip
-|> orelse raise ValidationError
-
-+? F.description
-|> str.Strip
-
-+! F.tags
-|> str.Strip
-|> str.Split[,]
-|> orelse raise ValidationError
-
-+? F.labels
-|> str.Strip
-|> str.Split[,]
-```
-
-= Controller
-```
-+! C.access_token
-|> orelse raise InvalidTokenError
-
-+! D.current_user
-|> orelse raise InvalidTokenError
-
-+! D.c_issues
-
-+! D.c_categories
-
-+? F.url
-|> db.FindOne(issues.url)
-|> redirect RedirectResponseError(issue.id)
-|> orelse db.InsertOne(F.@ + D.current_user)
-
-+! F.tags
-|> db.FindOne(categories.identifier="tags" && categories.name=F.tags[@])
-|> db.UpdateOne(categories.issues_ids)
-|> orelse db.InsertOne(categories)
-
-+? F.labels
-|> db.FindOne(categories.identifier="labels" && categories.name=F.labels[@])
-|> db.UpdateOne(categories.issues_ids)
-|> orelse db.InsertOne(categories)
-
-+! redirect RedirectResponseSuccess(issue.id)
-```
+#align(center, image("./Diagram-Request.drawio.svg"))
+#align(center, image("./Diagram-Controller.drawio.svg"))
